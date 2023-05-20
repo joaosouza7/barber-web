@@ -1,6 +1,8 @@
 import type { AppProps } from 'next/app';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 
+import { AuthProvider } from '../contexts/AuthContext';
+
 const colors = {
   barber: {
     900: '#12131b',
@@ -23,7 +25,9 @@ const theme = extendTheme({ colors });
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={theme}>
-      <Component {...pageProps} />
+      <AuthProvider>
+        <Component {...pageProps} />
+      </AuthProvider>
     </ChakraProvider>
   );
 }
