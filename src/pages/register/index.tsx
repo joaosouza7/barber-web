@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Flex, Text, Center, Input, Button } from '@chakra-ui/react';
 
 import { AuthContext } from '../../contexts/AuthContext';
+import { canSSRGuest } from '../../utils/canSSRGuest';
 
 import logo from '../../../public/images/logo.svg';
 
@@ -111,3 +112,9 @@ export default function Register() {
         </>
     );
 }
+
+export const getServerSideProps = canSSRGuest( async (ctx) => {
+    return {
+        props: {}
+    }
+});
