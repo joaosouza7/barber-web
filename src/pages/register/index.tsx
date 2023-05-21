@@ -1,27 +1,39 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Flex, Text, Center, Input, Button } from '@chakra-ui/react';
 
+import { AuthContext } from '../../contexts/AuthContext';
+
 import logo from '../../../public/images/logo.svg';
 
 export default function Register() {
+
+    const { signUp } = useContext(AuthContext);
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    function handleRegister() {
-        console.log(email);
-        console.log(password);
+    async function handleRegister() {
+
+        if(name === '' && email === '' && password === '') {
+            return;
+        }
+
+        await signUp({
+            name,
+            email,
+            password
+        });
     }
 
     return (
         <>
             <Head>
-                <title>Crie sua conta</title>
+                <title>BarberPRO - Crie sua conta</title>
             </Head>
 
             <Flex background='barber.900' height='100vh' alignItems='center' justifyContent='center'>
@@ -83,7 +95,7 @@ export default function Register() {
                         _hover={{ background: '#ffb13e' }}
                         onClick={handleRegister}
                     >
-                        Acessar
+                        Cadastrar
                     </Button>
 
                     <Center mt={2}>
