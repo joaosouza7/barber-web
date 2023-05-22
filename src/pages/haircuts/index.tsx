@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { IoMdPricetag } from 'react-icons/io';
@@ -13,9 +14,26 @@ import {
 
 import { Sidebar } from '../../components/sidebar';
 
-export default function Haircuts() {
+import { setupAPIClient } from '../../services/api';
+import { canSSRAuth } from '../../utils/canSSRAuth';
+
+interface HaircutsItem {
+    id: string;
+    name: string;
+    price: number | string;
+    status: boolean;
+    user_id: string;
+}
+
+interface HaircutsProps {
+    haircuts: HaircutsItem[];
+}
+
+export default function Haircuts({ haircuts }: HaircutsProps) {
 
     const [isMobile] = useMediaQuery('(max-width: 500px)');
+
+    const [haircutList, setHaircutList] = useState<HaircutsItem[]>(haircuts || []);
 
     return (
         <>
@@ -59,35 +77,79 @@ export default function Haircuts() {
 
                     </Flex>
 
-                    <Link href='/haircuts/123' style={{ width: '100%' }}>
-                        <Flex
-                            cursor='pointer'
-                            w='100%'
-                            p={4}
-                            bg='barber.400'
-                            direction='row'
-                            rounded='3'
-                            mt={isMobile ? 4 : 0}
-                            justifyContent='space-between'
-                            
-                        >
+                    {haircutList.map(haircut => (
+                        <Link href={`/haircuts/${haircut.id}`} style={{ width: '100%' }} key={haircut.id}>
+                            <Flex
+                                cursor='pointer'
+                                w='100%'
+                                p={4}
+                                bg='barber.400'
+                                direction='row'
+                                rounded='3'
+                                mt={isMobile ? 4 : 3}
+                                justifyContent='space-between'
+                                
+                            >
 
-                            <Flex alignItems='center' justifyContent='center'>
-                                <IoMdPricetag size={25} color='#fba931' />
-                                <Text ml={2} noOfLines={2} color='white'>
-                                    Corte completo
+                                <Flex alignItems='center' justifyContent='center'>
+                                    <IoMdPricetag size={25} color='#fba931' />
+                                    <Text ml={2} noOfLines={2} color='white'>
+                                        {haircut?.name}
+                                    </Text>
+                                </Flex>
+
+                                <Text>
+                                    {haircut?.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                 </Text>
+
                             </Flex>
-
-                            <Text>
-                                R$ 45.00
-                            </Text>
-
-                        </Flex>
-                    </Link>
+                        </Link>
+                    ))}
 
                 </Flex>
             </Sidebar>
         </>
     );
 }
+
+export const getServerSideProps = canSSRAuth( async (ctx) => {
+
+    try {
+
+        const apiClient = setupAPIClient(ctx);
+
+        const response = await apiClient.get('/haircuts',
+        {
+            params: {
+                status: true,
+            }
+        }
+        );
+
+        if(response?.data === null) {
+            return {
+                redirect: {
+                    destination: '/dashboard',
+                    permanent: false,
+                }
+            }
+        }
+
+        return {
+            props: {
+                haircuts: response?.data,
+            }
+        }
+
+        
+    } catch (error) {
+        console.log(error);
+
+        return {
+            redirect: {
+                destination: '/dashboard',
+                permanent: false,
+            }
+        }
+    }
+});
