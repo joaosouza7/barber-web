@@ -67,7 +67,7 @@ export default function Haircuts() {
                             bg='barber.400'
                             direction='row'
                             rounded='3'
-                            mb={2}
+                            mt={isMobile ? 4 : 0}
                             justifyContent='space-between'
                             
                         >
