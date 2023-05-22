@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import Router from 'next/router';
+
 import { FiChevronLeft } from 'react-icons/fi';
 import {
     Flex,
@@ -24,8 +27,28 @@ export default function NewHaircut({ subscription, count }: NewHaircutProps) {
 
     const [isMobile] = useMediaQuery('(max-width: 500px)');
 
-    function handleTeste() {
-        alert('clic');
+    const [name, setName] = useState('');
+    const [price, setPrice] = useState('');
+
+    async function handleRegister() {
+        
+        if(name === '' || price === '') return;
+
+        try {
+            
+            const apiClient = setupAPIClient();
+
+            await apiClient.post('/haircut', {
+                name: name,
+                price: Number(price),
+            });
+
+            Router.push('/haircuts');
+
+        } catch (error) {
+            console.log(error);
+            alert('ERRO AO CADASTRAR MODELO!');
+        }
     }
 
     return (
@@ -88,6 +111,8 @@ export default function NewHaircut({ subscription, count }: NewHaircutProps) {
                             bg='gray.900'
                             type='text'
                             disabled={ !subscription && count >= 3 }
+                            value={name}
+                            onChange={ (e) => setName(e.target.value) }
                         />
 
                         <Input 
@@ -98,6 +123,8 @@ export default function NewHaircut({ subscription, count }: NewHaircutProps) {
                             bg='gray.900'
                             type='text'
                             disabled={ !subscription && count >= 3 }
+                            value={price}
+                            onChange={ (e) => setPrice(e.target.value) }
                         />
 
                         <Button
@@ -108,7 +135,7 @@ export default function NewHaircut({ subscription, count }: NewHaircutProps) {
                             bg='button.cta'
                             _hover={{ bg: '#ffb13e' }}
                             isDisabled={!subscription && count >= 3}
-                            onClick={handleTeste}
+                            onClick={handleRegister}
                         >
                             Cadastrar
                         </Button>
