@@ -81,7 +81,7 @@ export default function Register() {
                         variant='filled'
                         size='lg'
                         placeholder='Senha'
-                        type='text'
+                        type='password'
                         mb={5}
                         color='button.gray'
                         value={password}

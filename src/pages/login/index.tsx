@@ -66,7 +66,7 @@ export default function Login() {
                         variant='filled'
                         size='lg'
                         placeholder='Digite sua senha...'
-                        type='text'
+                        type='password'
                         mb={5}
                         color='button.gray'
                         value={password}
