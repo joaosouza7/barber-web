@@ -12,6 +12,7 @@ import { Sidebar } from '../../components/sidebar';
 
 import { canSSRAuth } from '../../utils/canSSRAuth';
 import { setupAPIClient } from '../../services/api';
+import { getStripeJs } from '../../services/stripe-js';
 
 interface PlanosProps {
     premium: boolean;
@@ -20,6 +21,24 @@ interface PlanosProps {
 export default function Planos({ premium }: PlanosProps) {
 
     const [isMobile] = useMediaQuery('(max-width: 500px)');
+
+    const handleSubscribe = async () => {
+        if(premium) return;
+
+        try {
+
+            const apiClient = setupAPIClient();
+            const response = await apiClient.post('/subscribe');
+
+            const { sessionId } = response.data;
+
+            const stripe = await getStripeJs();
+            await stripe.redirectToCheckout({ sessionId: sessionId });
+            
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     return (
         <>
@@ -69,13 +88,13 @@ export default function Planos({ premium }: PlanosProps) {
                             <Text fontWeight='medium' ml={4} mb={2}>Editar perfil</Text>
                             <Text fontWeight='medium' ml={4} mb={2}>Editar modelos de corte</Text>
                             <Text fontWeight='medium' ml={4} mb={2}>Receber todas as atualizações.</Text>
-                            <Text textAlign='center' color='#31fb6a' fontWeight='700' fontSize='2xl' ml={4} mb={2}>R$ 25,99</Text>
+                            <Text textAlign='center' color='#31fb6a' fontWeight='700' fontSize='2xl' ml={4} mb={2}>R$ 9,99</Text>
 
                             <Button
                                 bg={premium ? 'gray.700' : 'button.cta'}
                                 m={2}
                                 color='white'
-                                onClick={() => {}}
+                                onClick={handleSubscribe}
                                 isDisabled={premium}
                             >
                                 {premium ? (
