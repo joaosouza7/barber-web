@@ -40,6 +40,25 @@ export default function Planos({ premium }: PlanosProps) {
         }
     }
 
+    async function handleCreatePortal() {
+
+        try {
+
+            if(!premium) return;
+
+            const apiClient = setupAPIClient();
+
+            const response = await apiClient.post('/create-portal');
+
+            const { sessionId } = response.data;
+
+            window.location.href = sessionId;
+            
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
     return (
         <>
             <Head>
@@ -110,7 +129,7 @@ export default function Planos({ premium }: PlanosProps) {
                                     bg='white'
                                     color='barber.900'
                                     fontWeight='600'
-                                    onClick={() => {}}
+                                    onClick={handleCreatePortal}
                                 >
                                     ALTERAR ASSINATURA
                                 </Button>
